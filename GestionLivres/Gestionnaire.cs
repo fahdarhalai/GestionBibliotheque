@@ -190,6 +190,7 @@ namespace GestionLivres
         {
             Acceuil acceuil = Acceuil.GetAcceuil;
             Acceuil.Sombre = Gestionnaire.Sombre;
+            acceuil.Location = this.Location;
             acceuil.Acceuil_Load();
             acceuil.Show();
             this.Hide();
@@ -200,6 +201,7 @@ namespace GestionLivres
         {
             Acceuil acceuil = Acceuil.GetAcceuil;
             Acceuil.Sombre = this.modeSombre.Checked;
+            acceuil.Location = this.Location;
             acceuil.Acceuil_Load();
             acceuil.Show();
             this.Hide();

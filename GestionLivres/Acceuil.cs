@@ -98,6 +98,7 @@ namespace GestionLivres
             Gestionnaire gestionnaire = Gestionnaire.GetGestionnaire;
             Gestionnaire.Sombre = Acceuil.Sombre;
             Gestionnaire.Action = Action.LISTER;
+            gestionnaire.Location = this.Location;
             gestionnaire.Gestionnaire_Load();
             gestionnaire.Show();
             this.Hide();
@@ -109,6 +110,7 @@ namespace GestionLivres
             Gestionnaire gestionnaire = Gestionnaire.GetGestionnaire;
             Gestionnaire.Sombre = Acceuil.Sombre;
             Gestionnaire.Action = Action.AJOUTER_LIVRE;
+            gestionnaire.Location = this.Location;
             gestionnaire.Gestionnaire_Load();
             gestionnaire.Show();
             this.Hide();
@@ -120,6 +122,7 @@ namespace GestionLivres
             Gestionnaire gestionnaire = Gestionnaire.GetGestionnaire;
             Gestionnaire.Sombre = Acceuil.Sombre;
             Gestionnaire.Action = Action.AJOUTER_ETAGERE;
+            gestionnaire.Location = this.Location;
             gestionnaire.Gestionnaire_Load();
             gestionnaire.Show();
             this.Hide();
@@ -131,6 +134,7 @@ namespace GestionLivres
             Gestionnaire gestionnaire = Gestionnaire.GetGestionnaire;
             Gestionnaire.Sombre = Acceuil.Sombre;
             Gestionnaire.Action = Action.REMPLACER_LIVRE;
+            gestionnaire.Location = this.Location;
             gestionnaire.Gestionnaire_Load();
             gestionnaire.Show();
             this.Hide();
@@ -142,6 +146,7 @@ namespace GestionLivres
             Gestionnaire gestionnaire = Gestionnaire.GetGestionnaire;
             Gestionnaire.Sombre = Acceuil.Sombre;
             Gestionnaire.Action = Action.REMETTRE_LIVRE;
+            gestionnaire.Location = this.Location;
             gestionnaire.Gestionnaire_Load();
             gestionnaire.Show();
             this.Hide();
@@ -153,6 +158,7 @@ namespace GestionLivres
             Gestionnaire gestionnaire = Gestionnaire.GetGestionnaire;
             Gestionnaire.Sombre = Acceuil.Sombre;
             Gestionnaire.Action = Action.RETIRER_LIVRE;
+            gestionnaire.Location = this.Location;
             gestionnaire.Gestionnaire_Load();
             gestionnaire.Show();
             this.Hide();
