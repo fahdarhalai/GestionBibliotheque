@@ -23,26 +23,45 @@ namespace GestionLivres
             metroComboBoxCode.Items.Clear();
             metroComboBoxEtagere.Items.Clear();
 
-            foreach(Livre livre in Acceuil.livres)
+            foreach (Livre livre in Acceuil.livres)
             {
                 metroComboBoxCode.Items.Add(livre.Code);
             }
 
-            Gestionnaire.con.Open();
-            SqlCommand cmd = Gestionnaire.con.CreateCommand();
-            cmd.CommandType = CommandType.Text;
-
-            cmd.CommandText = "select * from Etagere";
-            SqlDataReader sdr = cmd.ExecuteReader();
-
-            while (sdr.Read())
+            try
             {
-                metroComboBoxEtagere.Items.Add(sdr["numero"]);
+                Gestionnaire.con.Open();
+                SqlDataReader sdr;
+
+                // select etageres
+                sdr = Etagere.Select();
+                while (sdr.Read())
+                {
+                    metroComboBoxEtagere.Items.Add(sdr["numero"]);
+                }
+                sdr.Close();
+            }catch(Exception ex)
+            {
+                MetroFramework.MetroMessageBox.Show(this, ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            finally
+            {
+                Gestionnaire.con.Close();
+            }
+        }
 
-            sdr.Close();
-
-            Gestionnaire.con.Close();
+        public void modeSombre_load()
+        {
+            if (Gestionnaire.Sombre)
+            {
+                this.erreurCode.BackColor = Color.FromArgb(17, 17, 17);
+                this.erreurEtagere.BackColor = Color.FromArgb(17, 17, 17);
+            }
+            else
+            {
+                this.erreurCode.BackColor = Color.White;
+                this.erreurEtagere.BackColor = Color.White;
+            }
         }
 
         private void buttonAjouter_Click(object sender, EventArgs e)
@@ -72,46 +91,52 @@ namespace GestionLivres
                 Livre livre = null;
 
                 // Chercher le livre dans la listes des livres Acceuil
-                foreach(Livre li in Acceuil.livres)
-                {
-                    if(li.Code == code)
-                    {
-                        livre = li;
-                        break;
-                    }
-                }
+                livre = Acceuil.rechercherLivre(code);
 
                 // Chercher l'etagere dans la listes d'etageres Acceuil
-                foreach(Etagere eta in Acceuil.etageres)
+                Etagere eta = Acceuil.RechercherEtagere(etagere);
+                eta.livres.Add(livre);
+
+                try
                 {
-                    if(eta.Numero == etagere)
+                    Gestionnaire.con.Open();
+                    SqlDataReader sdr;
+
+                    // select livre avec code
+                    sdr = Livre.Select(0, code);
+                    if (sdr.HasRows)
                     {
-                        eta.livres.Add(livre);
+                        throw new Exception("Un livre possédant le même code existe déjà");
                     }
+
+                    sdr.Close();
+
+                    // Select etagere avec numero etagere
+                    sdr = Etagere.Select(0, etagere);
+                    if (sdr.Read())
+                    {
+                        id_etagere = Convert.ToInt32(sdr["id"]);
+                    }
+                    sdr.Close();
+
+                    // Insert livre
+                    Livre.insert(livre, id_etagere);
+
+                    Acceuil.livres.Remove(livre);
+
+                    MetroFramework.MetroMessageBox.Show(this, "Le livre a été remis dans l'étagère en succés", "Message", MessageBoxButtons.OK, MessageBoxIcon.Question);
                 }
-
-                Gestionnaire.con.Open();
-
-                SqlCommand cmd = Gestionnaire.con.CreateCommand();
-                cmd.CommandType = CommandType.Text;
-
-                // Selection du id etagere
-                cmd.CommandText = $"select id from Etagere where numero='{etagere}'";
-                SqlDataReader sdr = cmd.ExecuteReader();
-
-                if (sdr.Read())
+                catch(Exception ex)
                 {
-                    id_etagere = Convert.ToInt32(sdr["id"]);
+                    MetroFramework.MetroMessageBox.Show(this, ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                
-                sdr.Close();
-
-                // Insertion du livre dans la table
-                cmd.CommandText = $"insert into Livre (code,titre,prix,id_etagere) values ('{livre.Code}','{livre.Titre}',TRY_PARSE('{livre.Prix.ToString().Replace(',', '.')}' as float using 'en-US'),{id_etagere})";
-                cmd.ExecuteNonQuery();
-
-                Acceuil.livres.Remove(livre);
-                Gestionnaire.con.Close();
+                finally
+                {
+                    Gestionnaire.con.Close();
+                }
+                this.Hide();
+                this.RemettreLivre_load();
+                this.Show();
             }
         }
     }

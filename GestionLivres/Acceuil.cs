@@ -29,7 +29,7 @@ namespace GestionLivres
             RETIRER_LIVRE
         }
         
-        public Acceuil()
+        private Acceuil()
         {
             InitializeComponent();
             this.StyleManager = metroStyleManager1;
@@ -99,7 +99,6 @@ namespace GestionLivres
             Gestionnaire.Sombre = Acceuil.Sombre;
             Gestionnaire.Action = Action.LISTER;
             gestionnaire.Gestionnaire_Load();
-            //gestionnaire.FormClosing += delegate { this.Show(); };
             gestionnaire.Show();
             this.Hide();
             gestionnaire.Closed += (s, args) => Environment.Exit(0);
@@ -111,7 +110,6 @@ namespace GestionLivres
             Gestionnaire.Sombre = Acceuil.Sombre;
             Gestionnaire.Action = Action.AJOUTER_LIVRE;
             gestionnaire.Gestionnaire_Load();
-            //gestionnaire.FormClosing += delegate { this.Show(); };
             gestionnaire.Show();
             this.Hide();
             gestionnaire.Closed += (s, args) => Environment.Exit(0);
@@ -123,7 +121,6 @@ namespace GestionLivres
             Gestionnaire.Sombre = Acceuil.Sombre;
             Gestionnaire.Action = Action.AJOUTER_ETAGERE;
             gestionnaire.Gestionnaire_Load();
-            //gestionnaire.FormClosing += delegate { this.Show(); };
             gestionnaire.Show();
             this.Hide();
             gestionnaire.Closed += (s, args) => Environment.Exit(0);
@@ -135,7 +132,6 @@ namespace GestionLivres
             Gestionnaire.Sombre = Acceuil.Sombre;
             Gestionnaire.Action = Action.REMPLACER_LIVRE;
             gestionnaire.Gestionnaire_Load();
-            //gestionnaire.FormClosing += delegate { this.Show(); };
             gestionnaire.Show();
             this.Hide();
             gestionnaire.Closed += (s, args) => Environment.Exit(0);
@@ -147,7 +143,6 @@ namespace GestionLivres
             Gestionnaire.Sombre = Acceuil.Sombre;
             Gestionnaire.Action = Action.REMETTRE_LIVRE;
             gestionnaire.Gestionnaire_Load();
-            //gestionnaire.FormClosing += delegate { this.Show(); };
             gestionnaire.Show();
             this.Hide();
             gestionnaire.Closed += (s, args) => Environment.Exit(0);
@@ -159,7 +154,6 @@ namespace GestionLivres
             Gestionnaire.Sombre = Acceuil.Sombre;
             Gestionnaire.Action = Action.RETIRER_LIVRE;
             gestionnaire.Gestionnaire_Load();
-            //gestionnaire.FormClosing += delegate { this.Show(); };
             gestionnaire.Show();
             this.Hide();
             gestionnaire.Closed += (s, args) => Environment.Exit(0);
@@ -169,7 +163,29 @@ namespace GestionLivres
         {
             Environment.Exit(0);
         }
+    
+        public static Livre rechercherLivre(string code)
+        {
+            foreach (Livre li in Acceuil.livres)
+            {
+                if (li.Code == code)
+                {
+                    return li;
+                }
+            }
+            return null;
+        }
 
-        
+        public static Etagere RechercherEtagere(string numero)
+        {
+            foreach (Etagere etagere in Acceuil.etageres)
+            {
+                if (etagere.Numero == numero)
+                {
+                    return etagere;
+                }
+            }
+            return null;
+        }
     }
 }

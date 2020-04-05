@@ -25,6 +25,22 @@ namespace GestionLivres
             this.metroTextBoxPrix.Text = "";
         }
 
+        public void modeSombre_load()
+        {
+            if (Gestionnaire.Sombre)
+            {
+                this.erreurCode.BackColor = Color.FromArgb(17, 17, 17);
+                this.erreurPrix.BackColor = Color.FromArgb(17, 17, 17);
+                this.erreurTitre.BackColor = Color.FromArgb(17, 17, 17);
+            }
+            else
+            {
+                this.erreurCode.BackColor = Color.White;
+                this.erreurPrix.BackColor = Color.White;
+                this.erreurTitre.BackColor = Color.White;
+            }
+        }
+
         private void buttonAjouter_Click(object sender, EventArgs e)
         {
             this.erreurCode.Visible = false;
@@ -48,7 +64,7 @@ namespace GestionLivres
             }
 
             double prix = 0;
-            if (metroTextBoxPrix.Text == "" || (prix = Convert.ToDouble(metroTextBoxPrix.Text)) <= 0)
+            if (metroTextBoxPrix.Text == "" || (prix = Convert.ToDouble(metroTextBoxPrix.Text.Replace('.', ','))) <= 0)
             {
                 this.erreurPrix.Visible = true;
                 erreur = true;
@@ -58,20 +74,25 @@ namespace GestionLivres
             {
                 Livre livre = new Livre(code, titre, prix);
                 Acceuil.livres.Add(livre);
+                this.AjouterLivre_Load();
+                MetroFramework.MetroMessageBox.Show(this, "Le livre est ajouté en succés", "Message", MessageBoxButtons.OK, MessageBoxIcon.Question);
             }
         }
 
         private void metroTextBoxPrix_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && (e.KeyChar != ','))
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && (e.KeyChar != ',') && (e.KeyChar != '.'))
             {
                 e.Handled = true;
             }
 
             // only allow one decimal point
-            if ((e.KeyChar == ',') && (metroTextBoxPrix.Text.IndexOf(',') > -1))
+            if(e.KeyChar == ',' || e.KeyChar == '.')
             {
-                e.Handled = true;
+                if(metroTextBoxPrix.Text.IndexOf(',') > -1 || metroTextBoxPrix.Text.IndexOf('.') > -1)
+                {
+                    e.Handled = true;
+                }
             }
         }
     }

@@ -107,6 +107,7 @@ namespace GestionLivres
                     this.retirerLivre.Hide();
 
                     this.ajouterLivre.AjouterLivre_Load();
+                    this.ajouterLivre.modeSombre_load();
                     this.ajouterLivre.BringToFront();
                     this.ajouterLivre.Show();
                     break;
@@ -118,6 +119,7 @@ namespace GestionLivres
                     this.retirerLivre.Hide();
 
                     this.ajouterEtagere.AjouterEtagere_Load();
+                    this.ajouterEtagere.modeSombre_load();
                     this.ajouterEtagere.BringToFront();
                     this.ajouterEtagere.Show();
                     break;
@@ -141,6 +143,7 @@ namespace GestionLivres
                     this.retirerLivre.Hide();
 
                     this.remettreLivre.RemettreLivre_load();
+                    this.remettreLivre.modeSombre_load();
                     this.remettreLivre.BringToFront();
                     this.remettreLivre.Show();
                     break;
@@ -152,6 +155,7 @@ namespace GestionLivres
                     this.remettreLivre.Hide();
 
                     this.retirerLivre.RetirerLivre_Load();
+                    this.retirerLivre.modeSombre_load();
                     this.retirerLivre.BringToFront();
                     this.retirerLivre.Show();
                     break;
@@ -175,7 +179,11 @@ namespace GestionLivres
                 this.pictureBoxLightRetourner.Visible = true;
             }
             this.lister.modeSombre_load();
+            this.ajouterLivre.modeSombre_load();
             this.remplacerLivre.modeSombre_load();
+            this.ajouterEtagere.modeSombre_load();
+            this.remettreLivre.modeSombre_load();
+            this.retirerLivre.modeSombre_load();
         }
 
         private void pictureBoxLightRetourner_Click(object sender, EventArgs e)
@@ -183,7 +191,6 @@ namespace GestionLivres
             Acceuil acceuil = Acceuil.GetAcceuil;
             Acceuil.Sombre = Gestionnaire.Sombre;
             acceuil.Acceuil_Load();
-            //acceuil.FormClosing += delegate { this.Show(); };
             acceuil.Show();
             this.Hide();
             acceuil.Closed += (s, args) => Environment.Exit(0);
@@ -194,7 +201,6 @@ namespace GestionLivres
             Acceuil acceuil = Acceuil.GetAcceuil;
             Acceuil.Sombre = this.modeSombre.Checked;
             acceuil.Acceuil_Load();
-            //acceuil.FormClosing += delegate { this.Show(); };
             acceuil.Show();
             this.Hide();
             acceuil.Closed += (s, args) => Environment.Exit(0);

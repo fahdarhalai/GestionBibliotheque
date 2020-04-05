@@ -79,7 +79,7 @@
             this.buttonRemplacer.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.buttonRemplacer.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.buttonRemplacer.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonRemplacer.Location = new System.Drawing.Point(605, 278);
+            this.buttonRemplacer.Location = new System.Drawing.Point(605, 265);
             this.buttonRemplacer.Name = "buttonRemplacer";
             this.buttonRemplacer.Size = new System.Drawing.Size(125, 29);
             this.buttonRemplacer.TabIndex = 20;
@@ -107,7 +107,7 @@
             this.groupBox2.Controls.Add(this.metroLabel5);
             this.groupBox2.Controls.Add(this.metroComboBoxLivreRemplacant);
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Tai Le", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox2.Location = new System.Drawing.Point(124, 178);
+            this.groupBox2.Location = new System.Drawing.Point(124, 165);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(606, 85);
             this.groupBox2.TabIndex = 43;

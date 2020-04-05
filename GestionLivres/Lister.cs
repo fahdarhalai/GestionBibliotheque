@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Data.SqlClient;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace GestionLivres
 {
@@ -28,30 +23,37 @@ namespace GestionLivres
             dataGridView.DataSource = null;
             dataGridView.Rows.Clear();
 
-            Gestionnaire.con.Open();
-            SqlCommand cmd = Gestionnaire.con.CreateCommand();
-            cmd.CommandType = CommandType.Text;
-
-            // Selection des etageres pour combobox
-            cmd.CommandText = "select * from Etagere";
-            SqlDataReader sdr = cmd.ExecuteReader();
-
-            while (sdr.Read())
+            try
             {
-                metroComboBoxEtagere.Items.Add(sdr["numero"]);
+                Gestionnaire.con.Open();
+                SqlDataReader sdr;
+
+                // Select etageres
+                sdr = Etagere.Select();
+                while (sdr.Read())
+                {
+                    metroComboBoxEtagere.Items.Add(sdr["numero"]);
+                }
+                sdr.Close();
+
+                // Select livres
+                SqlCommand cmd = Gestionnaire.con.CreateCommand();
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = "select Livre.id, code, titre, prix, Etagere.numero from Livre, Etagere where Livre.id_etagere = Etagere.id";
+                cmd.ExecuteNonQuery();
+                DataTable dta = new DataTable();
+                SqlDataAdapter dataAdp = new SqlDataAdapter(cmd.CommandText, Gestionnaire.con);
+                dataAdp.Fill(dta);
+                dataGridView.DataSource = dta;
             }
-
-            sdr.Close();
-
-            // Selection des livres pour DataGridView
-            cmd.CommandText = "select Livre.id, code, titre, prix, Etagere.numero from Livre, Etagere where Livre.id_etagere = Etagere.id";
-            cmd.ExecuteNonQuery();
-            DataTable dta = new DataTable();
-            SqlDataAdapter dataAdp = new SqlDataAdapter(cmd.CommandText, Gestionnaire.con);
-            dataAdp.Fill(dta);
-            dataGridView.DataSource = dta;
-
-            Gestionnaire.con.Close();
+            catch (Exception ex)
+            {
+                MetroFramework.MetroMessageBox.Show(this, ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                Gestionnaire.con.Close();
+            }
         }
 
         public void modeSombre_load()
@@ -74,27 +76,35 @@ namespace GestionLivres
         {
             string etagere = metroComboBoxEtagere.Text;
 
-            Gestionnaire.con.Open();
-            SqlCommand cmd = Gestionnaire.con.CreateCommand();
-            cmd.CommandType = CommandType.Text;
-
-            switch (etagere)
+            try
             {
-                case "Tout":
-                    cmd.CommandText = "select Livre.id, code, titre, prix, Etagere.numero from Livre, Etagere where Livre.id_etagere = Etagere.id";
-                    break;
-                default:
-                    cmd.CommandText = "select Livre.id, code, titre, prix, Etagere.numero from Livre, Etagere where Livre.id_etagere = Etagere.id and Etagere.numero = '"+etagere+"'";
-                    break;
+                Gestionnaire.con.Open();
+                SqlCommand cmd = Gestionnaire.con.CreateCommand();
+                cmd.CommandType = CommandType.Text;
+
+                switch (etagere)
+                {
+                    case "Tout":
+                        cmd.CommandText = "select Livre.id, code, titre, prix, Etagere.numero from Livre, Etagere where Livre.id_etagere = Etagere.id";
+                        break;
+                    default:
+                        cmd.CommandText = "select Livre.id, code, titre, prix, Etagere.numero from Livre, Etagere where Livre.id_etagere = Etagere.id and Etagere.numero = '" + etagere + "'";
+                        break;
+                }
+
+                cmd.ExecuteNonQuery();
+                DataTable dta = new DataTable();
+                SqlDataAdapter dataAdp = new SqlDataAdapter(cmd.CommandText, Gestionnaire.con);
+                dataAdp.Fill(dta);
+                dataGridView.DataSource = dta;
+            }catch(Exception ex)
+            {
+                MetroFramework.MetroMessageBox.Show(this, ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            cmd.ExecuteNonQuery();
-            DataTable dta = new DataTable();
-            SqlDataAdapter dataAdp = new SqlDataAdapter(cmd.CommandText, Gestionnaire.con);
-            dataAdp.Fill(dta);
-            dataGridView.DataSource = dta;
-
-            Gestionnaire.con.Close();
+            finally
+            {
+                Gestionnaire.con.Close();
+            }
         }
     }
 }

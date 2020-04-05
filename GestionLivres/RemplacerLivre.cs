@@ -29,21 +29,27 @@ namespace GestionLivres
             this.metroComboBoxLivreRetire.Enabled = false;
             this.metroComboBoxLivreRemplacant.Enabled = false;
 
-            Gestionnaire.con.Open();
-            SqlCommand cmd = Gestionnaire.con.CreateCommand();
-            cmd.CommandType = CommandType.Text;
-
-            cmd.CommandText = "select * from Etagere";
-            SqlDataReader sdr = cmd.ExecuteReader();
-
-            while (sdr.Read())
+            try
             {
-                metroComboBoxEtagereRetire.Items.Add(sdr["numero"]);
+                Gestionnaire.con.Open();
+                SqlDataReader sdr;
+
+                // select etageres
+                sdr = Etagere.Select();
+                while (sdr.Read())
+                {
+                    metroComboBoxEtagereRetire.Items.Add(sdr["numero"]);
+                }
+                sdr.Close();
+
+            }catch(Exception ex)
+            {
+                MetroFramework.MetroMessageBox.Show(this, ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            sdr.Close();
-
-            Gestionnaire.con.Close();
+            finally
+            {
+                Gestionnaire.con.Close();
+            }
 
         }
 
@@ -55,6 +61,10 @@ namespace GestionLivres
                 this.groupBox2.BackColor = Color.FromArgb(17, 17, 17);
                 this.groupBox1.ForeColor = Color.FromArgb(170, 170, 170);
                 this.groupBox2.ForeColor = Color.FromArgb(170, 170, 170);
+                this.erreurEtagereRemplacant.BackColor = Color.FromArgb(17, 17, 17);
+                this.erreurEtagereRetire.BackColor = Color.FromArgb(17, 17, 17);
+                this.erreurLivreRemplacant.BackColor = Color.FromArgb(17, 17, 17);
+                this.erreurLivreRetire.BackColor = Color.FromArgb(17, 17, 17);
             }
             else
             {
@@ -62,43 +72,11 @@ namespace GestionLivres
                 this.groupBox2.BackColor = Color.White;
                 this.groupBox1.ForeColor = Color.Black;
                 this.groupBox2.ForeColor = Color.Black;
+                this.erreurEtagereRemplacant.BackColor = Color.White;
+                this.erreurEtagereRetire.BackColor = Color.White;
+                this.erreurLivreRemplacant.BackColor = Color.White;
+                this.erreurLivreRetire.BackColor = Color.White;
             }
-        }
-
-        void metroComboBoxLivreRetire_Load(int id_etagere)
-        {
-            this.metroComboBoxLivreRetire.Items.Clear();
-            Gestionnaire.con.Open();
-            SqlCommand cmd = Gestionnaire.con.CreateCommand();
-            cmd.CommandType = CommandType.Text;
-            cmd.CommandText = $"select code from Livre where id_etagere={id_etagere}";
-            SqlDataReader sdr = cmd.ExecuteReader();
-
-            while (sdr.Read())
-            {
-                metroComboBoxLivreRetire.Items.Add(sdr["code"]);
-            }
-
-            sdr.Close();
-            Gestionnaire.con.Close();
-        }
-
-        void metroComboBoxLivreRemplacant_Load(int id_etagere)
-        {
-            this.metroComboBoxLivreRemplacant.Items.Clear();
-            Gestionnaire.con.Open();
-            SqlCommand cmd = Gestionnaire.con.CreateCommand();
-            cmd.CommandType = CommandType.Text;
-            cmd.CommandText = $"select code from Livre where id_etagere={id_etagere}";
-            SqlDataReader sdr = cmd.ExecuteReader();
-
-            while (sdr.Read())
-            {
-                metroComboBoxLivreRemplacant.Items.Add(sdr["code"]);
-            }
-
-            sdr.Close();
-            Gestionnaire.con.Close();
         }
 
         private void buttonRemplacer_Click(object sender, EventArgs e)
@@ -145,54 +123,51 @@ namespace GestionLivres
                 int id_etagere1 = 0;
                 int id_etagere2 = 0;
 
-                Gestionnaire.con.Open();
-
-                SqlCommand cmd = Gestionnaire.con.CreateCommand();
-                cmd.CommandType = CommandType.Text;
-
-                // selection du livre retiré de la base de données
-                cmd.CommandText = $"select * from Livre where code='{code1}'";
-                SqlDataReader sdr = cmd.ExecuteReader();
-
-                if (sdr.Read())
+                try
                 {
-                    id_livre = Convert.ToInt32(sdr["id"]);
-                    id_etagere1 = Convert.ToInt32(sdr["id_etagere"]);
-                    livre = new Livre(sdr["code"].ToString(), sdr["titre"].ToString(), Convert.ToDouble(sdr["prix"]));
+                    Gestionnaire.con.Open();
+                    SqlDataReader sdr;
+
+                    // select livre avec code1
+                    sdr = Livre.Select(0, code1);
+                    if (sdr.Read())
+                    {
+                        id_livre = Convert.ToInt32(sdr["id"]);
+                        id_etagere1 = Convert.ToInt32(sdr["id_etagere"]);
+                        livre = new Livre(sdr["code"].ToString(), sdr["titre"].ToString(), Convert.ToDouble(sdr["prix"]));
+                    }
+                    sdr.Close();
+
+                    // delete livre avec id_livre
+                    Livre.Delete(id_livre);
+                    Acceuil.livres.Add(livre);
+
+                    // select livre avec code2
+                    sdr = Livre.Select(0, code2);
+                    if (sdr.Read())
+                    {
+                        id_livre = Convert.ToInt32(sdr["id"]);
+                        id_etagere2 = Convert.ToInt32(sdr["id"]);
+                        livre = new Livre(sdr["code"].ToString(), sdr["titre"].ToString(), Convert.ToDouble(sdr["prix"]));
+                    }
+                    sdr.Close();
+
+                    // update livre avec id_livre
+                    Livre.Update(id_livre, id_etagere1);
+
+                    MetroFramework.MetroMessageBox.Show(this, "Le livre a été remplacé en succés", "Message", MessageBoxButtons.OK, MessageBoxIcon.Question);
                 }
-
-                sdr.Close();
-
-                // suppression du livre retiré de la base de données
-                cmd.CommandText = $"delete from Livre where id={id_livre}";
-                cmd.ExecuteNonQuery();
-                Acceuil.livres.Add(livre);
-
-                // selection du livre remplaçant de la base de données
-                cmd.CommandText = $"select * from Livre where code='{code2}'";
-                sdr = cmd.ExecuteReader();
-
-                if (sdr.Read())
+                catch(Exception ex)
                 {
-                    id_livre = Convert.ToInt32(sdr["id"]);
-                    id_etagere2 = Convert.ToInt32(sdr["id"]);
-                    livre = new Livre(sdr["code"].ToString(), sdr["titre"].ToString(), Convert.ToDouble(sdr["prix"]));
+                    MetroFramework.MetroMessageBox.Show(this, ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-
-                sdr.Close();
-
-                // suppression du livre remplaçant de la base de données
-                cmd.CommandText = $"delete from Livre where id={id_livre}";
-                cmd.ExecuteNonQuery();
-
-                // insertion du livre remplaçant dans la meme etagere
-                cmd.CommandText = $"insert into Livre (code,titre,prix,id_etagere) values ('{livre.Code}','{livre.Titre}',TRY_PARSE('{livre.Prix.ToString().Replace(',', '.')}' as float using 'en-US'),{id_etagere1})";
-                cmd.ExecuteNonQuery();
-
-                Gestionnaire.con.Close();
-
-                this.metroComboBoxLivreRetire_Load(id_etagere1);
-                this.metroComboBoxLivreRemplacant_Load(id_etagere2);
+                finally
+                {
+                    Gestionnaire.con.Close();
+                }
+                this.Hide();
+                this.RemplacerLivre_Load();
+                this.Show();
             }
         }
 
@@ -212,29 +187,40 @@ namespace GestionLivres
             string numEtagere = this.metroComboBoxEtagereRetire.Text;
             int id_etagere = 0;
 
-            Gestionnaire.con.Open();
-            SqlCommand cmd = Gestionnaire.con.CreateCommand();
-            cmd.CommandType = CommandType.Text;
-
-            cmd.CommandText = "select id, numero from Etagere";
-            SqlDataReader sdr = cmd.ExecuteReader();
-
-            while (sdr.Read())
+            try
             {
-                if (numEtagere == sdr["numero"].ToString())
+                Gestionnaire.con.Open();
+                SqlDataReader sdr;
+
+                // select etageres
+                sdr = Etagere.Select();
+                while (sdr.Read())
                 {
-                    id_etagere = Convert.ToInt32(sdr["id"]);
-                }
-                else
-                {
+                    if (numEtagere == sdr["numero"].ToString())
+                    {
+                        id_etagere = Convert.ToInt32(sdr["id"]);
+                        continue;
+                    }
                     this.metroComboBoxEtagereRemplacant.Items.Add(sdr["numero"].ToString());
                 }
+                sdr.Close();
+
+                this.metroComboBoxLivreRetire.Items.Clear();
+                // select livre avec id_etagere
+                sdr = Livre.Select(0, "", id_etagere);
+                while (sdr.Read())
+                {
+                    metroComboBoxLivreRetire.Items.Add(sdr["code"]);
+                }
+                sdr.Close();
+            }catch(Exception ex)
+            {
+                MetroFramework.MetroMessageBox.Show(this, ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            sdr.Close();
-            Gestionnaire.con.Close();
-
-            this.metroComboBoxLivreRetire_Load(id_etagere);
+            finally
+            {
+                Gestionnaire.con.Close();
+            }
         }
 
         private void metroComboBoxEtagereRemplacant_SelectedIndexChanged(object sender, EventArgs e)
@@ -245,22 +231,35 @@ namespace GestionLivres
             string numEtagere = this.metroComboBoxEtagereRemplacant.Text;
             int id_etagere = 0;
 
-            Gestionnaire.con.Open();
-            SqlCommand cmd = Gestionnaire.con.CreateCommand();
-            cmd.CommandType = CommandType.Text;
-
-            cmd.CommandText = $"select id from Etagere where numero='{numEtagere}'";
-            SqlDataReader sdr = cmd.ExecuteReader();
-
-            if (sdr.Read())
+            try
             {
-                id_etagere = Convert.ToInt32(sdr["id"]);
+                Gestionnaire.con.Open();
+                SqlDataReader sdr;
+
+                // select etagere avec numEtagere
+                sdr = Etagere.Select(0, numEtagere);
+                if (sdr.Read())
+                {
+                    id_etagere = Convert.ToInt32(sdr["id"]);
+                }
+                sdr.Close();
+
+                this.metroComboBoxLivreRemplacant.Items.Clear();
+                // select livre avec id_etagere
+                sdr = Livre.Select(0, "", id_etagere);
+                while (sdr.Read())
+                {
+                    metroComboBoxLivreRemplacant.Items.Add(sdr["code"]);
+                }
+                sdr.Close();
+            }catch(Exception ex)
+            {
+                MetroFramework.MetroMessageBox.Show(this, ex.Message, "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            sdr.Close();
-            Gestionnaire.con.Close();
-
-            this.metroComboBoxLivreRemplacant_Load(id_etagere);
+            finally
+            {
+                Gestionnaire.con.Close();
+            }
         }
     }
 }
