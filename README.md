@@ -20,9 +20,9 @@ Vous allez remarqué l'apparition des répertoire "bin" et "obj", il suffit de p
 ## Screenshots
 1- Mode Light:
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/41004675/79070956-cba74400-7cd0-11ea-8c61-b618d1238a7b.PNG" width="85%">
+  <img src="https://user-images.githubusercontent.com/41004675/79070957-ccd87100-7cd0-11ea-8e29-a7a38d74ba60.PNG" width="85%">
 </p>
 2- Mode Dark:
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/41004675/79070957-ccd87100-7cd0-11ea-8e29-a7a38d74ba60.PNG" width="85%">
+  <img src="https://user-images.githubusercontent.com/41004675/79070956-cba74400-7cd0-11ea-8c61-b618d1238a7b.PNG" width="85%">
 </p>
